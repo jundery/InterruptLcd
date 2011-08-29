@@ -34,6 +34,7 @@ struct LCD_BUFFER
 #define INTERRUPTSTATE_E_GOLO      7    // Data loop, end send data - E Low
 
 #define HOME_CURSOR_CMD        0x80 // Set the LCD to Addr 0
+#define WRITE_CGRAM_CMD        0x40
 
 #define TIMER_A_VALUE          0
 #define TIMER_B_VALUE          _BV(CS32) | _BV(WGM32); //1/128th, CTC = 16 microsecond timer
@@ -104,7 +105,14 @@ void lcdInit()
 
 void lcdCreateChar(uint8_t location, uint8_t charmap[])
 {
-    lcd.createChar(location, charmap);
+    int i;
+    
+    lcdCommand(WRITE_CGRAM_CMD | ((location & 0x07) << 3)); // Lock location to 0-7 and multiple by 8
+    
+    for (i = 0; i < 8; ++i)
+    {
+        lcdSyncWrite(charmap[i]);
+    }
 }
 
 void lcdSetCursor(int col, int row)
@@ -150,7 +158,8 @@ bool lcdLockBuffer()
     
     if (!pWrite->WriteReady)
     {
-        Serial.print((int)interruptState);
+        //Serial.print((int)interruptState);
+        CODE_LEAVE;
         return false;
     }
     pWrite->WriteReady = false;
