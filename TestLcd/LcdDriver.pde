@@ -102,6 +102,11 @@ void lcdInit()
     OutCmpA(LcdInterruptNumber) = INTERRUPT_IDLE; 
 }
 
+void lcdCreateChar(uint8_t location, uint8_t charmap[])
+{
+    lcd.createChar(location, charmap);
+}
+
 void lcdSetCursor(int col, int row)
 {
     switch (row)
@@ -179,6 +184,40 @@ void lcdWriteBuffer()
 Internal functions
 
 ************************************************************************/
+
+void lcdCommand(uint8_t value)
+{
+    WRITE(LCD_RS_PIN, LOW);
+    lcdSyncWrite(value);
+    WRITE(LCD_RS_PIN, HIGH);
+}
+
+void lcdCommandNibble(uint8_t value)
+{
+    WRITE(LCD_RS_PIN, LOW);
+    lcdSyncWriteNibble(value);
+    WRITE(LCD_RS_PIN, HIGH);
+}
+
+void lcdSyncWrite(uint8_t value)
+{
+    lcdSyncWriteNibble(value >> 4);
+    lcdSyncWriteNibble(value);
+}
+
+void lcdSyncWriteNibble(uint8_t value)
+{
+    lcdSetDataBits(value);        
+    
+    WRITE(LCD_E_PIN, HIGH);
+    
+    delayMicroseconds(1);
+    
+    WRITE(LCD_E_PIN, LOW);
+    
+    delayMicroseconds(50);
+}
+
 
 inline void lcdSetDataBits(uint8_t nibble)
 {         

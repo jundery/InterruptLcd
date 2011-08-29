@@ -27,6 +27,10 @@
 // display can be used.
 void lcdInit();
 
+// Create a custom character in one of the first 8 places
+// NOTE: must be called after lcdInit and before anyother methods
+void lcdCreateChar(uint8_t location, uint8_t charmap[]);
+
 // lcdLockBuffer - Called to setup a buffer to write to returns true on success and should
 // be followed by a matching call to lcdWriteBuffer(). A return value of false means there
 // isn't a buffer free to write to.
