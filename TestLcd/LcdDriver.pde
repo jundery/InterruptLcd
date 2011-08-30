@@ -385,6 +385,14 @@ void handleLcd()
             
             if(pReadCurrent >= pRead->pEnd || pRead->pNext->ReadReady)
             {
+                if (readTick <= 0x02)
+                {
+                    // Bug in Hardware write two char from the buffer
+                    // as setCursor(0,0); print(char); setCursor(0,0)
+                    // corrupts the state of the controller
+                    interruptState = INTERRUPTSTATE_E_GOHI;
+                    return;
+                }
                 pRead->WriteReady = true;
                 pRead->ReadReady = false;
                 
