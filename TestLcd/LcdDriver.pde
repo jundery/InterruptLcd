@@ -5,6 +5,8 @@
     A double buffered interrupt driven LCD library
 */
 
+//#define LCD_DEBUG
+
 #include <LiquidCrystal.h>
 // Using LiquidCrystal for initialization
 static LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, 
@@ -160,6 +162,7 @@ bool lcdLockBuffer()
     {
         //Serial.print((int)interruptState);
         CODE_LEAVE;
+        pWrite = 0;
         return false;
     }
     pWrite->WriteReady = false;
@@ -182,7 +185,7 @@ void lcdWriteBuffer()
     }
     
     CODE_LEAVE; // End synchronize ReadReady and writeState with ISR
-    
+
     pWriteNext = pWrite->pNext;
     pWrite = 0;
     pWriteCurrent = 0;
@@ -193,6 +196,65 @@ void lcdWriteBuffer()
 Internal functions
 
 ************************************************************************/
+
+#ifdef LCD_DEBUG
+
+void DebugState(struct LCD_BUFFER *pBuffer)
+{
+    int i,j, k;
+    Serial.print("Buffer=");
+    Serial.println((int)pBuffer);
+    if (pBuffer == 0)
+    {
+        return;
+    }
+    Serial.print("WR=");
+    Serial.println((int)pBuffer->WriteReady);
+    Serial.print("RR=");
+    Serial.println((int)pBuffer->ReadReady);
+    for (i = 0, k = 0; i < LCD_ROWS; ++i)
+    {
+        for (j = 0; j <  LCD_COLS; ++j)
+        {
+            Serial.print(pBuffer->Buffer[k],HEX);
+            Serial.print(' ');
+            ++k;
+        }
+        Serial.println();
+    }
+    Serial.print("e=");
+    Serial.println((int)pBuffer->pEnd);
+    Serial.print("n=");
+    Serial.println((int)pBuffer->pNext);
+}
+
+void DebugState()
+{
+    cli();
+    Serial.println();
+    Serial.print("pRead ");
+    DebugState(pRead);
+    Serial.print("pReadCurrent=");
+    Serial.println((int)pReadCurrent);
+    Serial.print("readTick=");
+    Serial.println((int)readTick);
+    
+    Serial.print("pWrite ");
+    DebugState(pWrite);
+    Serial.print("pWriteNext ");
+    DebugState(pWriteNext);
+    Serial.print("pWriteCurrent=");
+    Serial.println((int)pWriteCurrent);
+    
+    Serial.print("ops=");
+    Serial.println((int)ops);
+
+    Serial.print("interruptState=");
+    Serial.println((int)interruptState);
+    sei();
+}
+
+#endif
 
 void lcdCommand(uint8_t value)
 {
@@ -323,6 +385,14 @@ void handleLcd()
             
             if(pReadCurrent >= pRead->pEnd || pRead->pNext->ReadReady)
             {
+                if (readTick <= 0x02)
+                {
+                    // Bug in Hardware write two char from the buffer
+                    // as setCursor(0,0); print(char); setCursor(0,0)
+                    // corrupts the state of the controller
+                    interruptState = INTERRUPTSTATE_E_GOHI;
+                    return;
+                }
                 pRead->WriteReady = true;
                 pRead->ReadReady = false;
                 
