@@ -1,12 +1,42 @@
-//#include <WProgram.h>
 #include "LcdDriver.h"
-//#include <LiquidCrystal.h>
-	
-//LiquidCrystal lcd(2, 3, 7,6,5,4);
-//LiquidCrystal lcd(12, 11, 10, 5, 4, 3, 2);
-//LiquidCrystal lcd(12, 10, 5, 4, 3, 2);
 
 int count;
+
+  byte Degree[8] =
+  {
+    B01100,
+    B10010,
+    B10010,
+    B01100,
+    B00000,
+    B00000,
+    B00000,
+    B00000
+  };
+  byte Thermometer[8] =
+  {
+    B00100,
+    B01010,
+    B01010,
+    B01010,
+    B01010,
+    B10001,
+    B10001,
+    B01110
+  };
+
+//#define DBG_STATE 
+
+#ifndef DBG_STATE
+#define DebugState() 
+#endif
+
+#define LCD_CMD_COUNT    5
+#define LCD_BIT_COUNT    2
+#define LCD_SCR_COUNT    (LCD_ROWS * LCD_COLS * LCD_BIT_COUNT + LCD_CMD_COUNT)
+
+void TestTwoBuffersWaiting();
+void TestCustomChar();
 
 void setup()
 {
@@ -14,13 +44,15 @@ void setup()
     Serial.begin(28800);
     Serial.print("Startup...\n");
     lcdInit();
-    //lcd.begin(20,4);
-    //lcd.setCursor(0,0);
-    //lcd.print("hello, world!");
+
     pinMode(13, OUTPUT); 
 
     delay(1000);
-
+    
+    TestCustomChar();
+    //TestTwoBuffersWaiting();
+    
+    DebugState();
     while(!lcdLockBuffer())
     {
         delay(1);
@@ -35,12 +67,11 @@ void setup()
     lcdPrint("4 Waited for buffer.");
     lcdWriteBuffer();
     
-    delay(260);
-    Serial.println('1');
+    delay(333);
+    //DebugState();
     
     if(lcdLockBuffer())
     {
-         Serial.println('2');
         lcdSetCursor(0,0);
         lcdPrint("1 Tested for buffer.");
         lcdSetCursor(0,1);
@@ -49,22 +80,21 @@ void setup()
         lcdPrint("3 Tested for buffer.");
         lcdSetCursor(0,3);
         lcdPrint("4 Tested for buffer.");
-         Serial.println('3');
         lcdWriteBuffer();
-         Serial.println('4');
     }
     
+    DebugState();
+
     while(!lcdLockBuffer())
     {
-         Serial.println('5');
         delay(100);
     }
-    Serial.println('6');
+    //DebugState();
     lcdSetCursor(0,0);
     lcdPrint("1111111");
-    lcdPrint('2');
     delay(1000);
     lcdWriteBuffer();
+
     delay(1000);
 }
 
@@ -72,7 +102,6 @@ void loop()
 {
     int i;
     unsigned long entry;
-
     ++count;
     if (count >= 10) count = 0;
     entry = millis();
@@ -106,8 +135,69 @@ void loop()
     {
         Serial.println("Skipped..");
     }
-    
+
     entry = millis() - entry;
     
     delay(150 - entry);
 }
+
+void TestTwoBuffersWaiting()
+{
+    if(lcdLockBuffer())
+    {
+        lcdSetCursor(0,0);
+        lcdPrint("1 Tested for buffer.");
+        lcdSetCursor(0,1);
+        lcdPrint("2 Tested for buffer.");
+        lcdSetCursor(0,2);
+        lcdPrint("3 Tested for buffer.");
+        lcdSetCursor(0,3);
+        lcdPrint("4 Tested for buffer.");
+        lcdWriteBuffer();
+    }
+
+    if(lcdLockBuffer())
+    {
+        lcdSetCursor(0,0);
+        lcdPrint("5 Tested for buffer.");
+        lcdSetCursor(0,1);
+        lcdPrint("6 Tested for buffer.");
+        lcdSetCursor(0,2);
+        lcdPrint("7 Tested for buffer.");
+        lcdSetCursor(0,3);
+        lcdPrint("8 Tested for buffer.");
+        lcdWriteBuffer();
+    }
+    
+//    for (int i = 0; i < 2 * LCD_SCR_COUNT; ++i)
+//    {
+//        //DebugState();
+//        handleLcd();
+//        delayMicroseconds(50);
+//    }
+    //DebugState();
+
+    while(true);
+}
+
+void TestCustomChar()
+{
+  lcdCreateChar(1, Degree);
+  lcdCreateChar(2, Thermometer);
+  
+    if(lcdLockBuffer())
+    {
+        lcdSetCursor(0,0);
+        lcdPrint(1);
+        lcdPrint(" Degree.");
+        
+        lcdSetCursor(0,1);
+        lcdPrint(2);
+        lcdPrint(" Thermometer.");
+        lcdWriteBuffer();
+    }
+    
+    while(true);
+}
+
+
