@@ -3,17 +3,12 @@
 
 #include <stdint.h>
 
-/*
-    LCD pin configuration currently only supports 4bit and no R/W pin
-    Set the defines below to match your configuration
-*/
-
-#define FUNCTION_8BIT    0x10
-#define FUNCTION_4BIT    0x00
-#define FUNCTION_2LINE   0x08
-#define FUNCTION_1LINE   0x00
-#define FUNCTION_5x10    0x04
-#define FUNCTION_5x8     0x00
+#define FUNCTION_8BIT        0x10
+#define FUNCTION_4BIT        0x00
+#define FUNCTION_MULTILINE   0x08
+#define FUNCTION_ONELINE     0x00
+#define FUNCTION_5x10        0x04
+#define FUNCTION_5x8         0x00
 
 #define DISPLAY_DISPLAY_ON     0x04
 #define DISPLAY_DISPLAY_OFF    0x00
@@ -22,15 +17,23 @@
 #define DISPLAY_BLINK_ON       0x01
 #define DISPLAY_BLINK_OFF      0x00
 
-#define ENTRY_INCREMENT        0x02    // Print left to right
-#define ENTRY_DECREMENT        0x00    // Print right to left
+#define ENTRY_LEFTTORIGHT      0x02
+#define ENTRY_RIGHTTOLEFT      0x00
 #define ENTRY_SHIFT_ON         0x01    // Shift display on write
 #define ENTRY_SHIFT_OFF        0x00    // Do not shift display on write
 
-#define FUNCTION_ARGS  FUNCTION_4BIT | FUNCTION_2LINE | FUNCTION_5x8
-#define DISPLAY_ARGS   DISPLAY_DISPLAY_ON | DISPLAY_CURSOR_OFF | DISPLAY_BLINK_OFF
-#define ENTRY_CMD_ARGS ENTRY_INCREMENT | ENTRY_SHIFT_OFF
+/*
+    Initialization arguments 
+*/
 
+#define FUNCTION_ARGS  FUNCTION_4BIT | FUNCTION_MULTILINE | FUNCTION_5x8
+#define DISPLAY_ARGS   DISPLAY_DISPLAY_ON | DISPLAY_CURSOR_OFF | DISPLAY_BLINK_OFF
+#define ENTRY_CMD_ARGS ENTRY_LEFTTORIGHT | ENTRY_SHIFT_OFF
+
+/*
+    LCD pin configuration currently only supports 4bit and no R/W pin
+    Set the defines below to match your configuration
+*/
 #define LCD_RS_PIN     12    // Register Select
 #define LCD_E_PIN      10    // Enable pin
 
@@ -72,6 +75,8 @@ void lcdPrint(char* pString);
 // Print a byte to the buffer and advance the current write postition.
 void lcdPrint(uint8_t value);
 
+// Lock buffer and write it in one call returns true on success, false if no buffer
+// was available
 bool lcdWriteBuffer(uint8_t *pBuffer);
 
 #endif
