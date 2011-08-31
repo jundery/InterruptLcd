@@ -191,6 +191,37 @@ void lcdWriteBuffer()
     pWriteCurrent = 0;
 }
 
+bool lcdWriteBuffer(uint8_t *pBuffer)
+{
+    CODE_ENTER; // Syncronize WriteReady with ISR
+    
+    if (!pWriteNext->WriteReady)
+    {
+        //Serial.print((int)interruptState);
+        CODE_LEAVE;
+        return false;
+    }
+    pWriteNext->WriteReady = false;
+    
+    CODE_LEAVE; // End syncronize WriteReady with ISR
+    
+    memcpy(pWriteNext->Buffer, pBuffer, LCD_ROWS * LCD_COLS); 
+    
+    CODE_ENTER; // Synchronize ReadReady and writeState with ISR
+    
+    pWrite->ReadReady = true;
+    if (interruptState == INTERRUPTSTATE_IDLE)
+    {
+        interruptState = INTERRUPTSTATE_CMD_HI1;
+    }
+    
+    CODE_LEAVE; // End synchronize ReadReady and writeState with ISR
+
+    pWriteNext = pWrite->pNext;
+    
+    return true;
+}
+
 /************************************************************************
 
 Internal functions

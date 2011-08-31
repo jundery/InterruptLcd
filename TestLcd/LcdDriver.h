@@ -49,4 +49,6 @@ void lcdPrint(char* pString);
 // Print a byte to the buffer and advance the current write postition.
 void lcdPrint(uint8_t value);
 
+bool lcdWriteBuffer(uint8_t *pBuffer);
+
 #endif
