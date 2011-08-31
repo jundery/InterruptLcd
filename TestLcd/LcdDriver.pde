@@ -7,11 +7,6 @@
 
 //#define LCD_DEBUG
 
-#include <LiquidCrystal.h>
-// Using LiquidCrystal for initialization
-static LiquidCrystal lcd(LCD_RS_PIN, LCD_E_PIN, 
-    LCD_DB4_PIN, LCD_DB5_PIN, LCD_DB6_PIN, LCD_DB7_PIN);
-
 struct LCD_BUFFER
 {
     volatile boolean ReadReady;
@@ -35,8 +30,15 @@ struct LCD_BUFFER
 #define INTERRUPTSTATE_E_GOHI      6    // Data loop, start send data - E High
 #define INTERRUPTSTATE_E_GOLO      7    // Data loop, end send data - E Low
 
-#define HOME_CURSOR_CMD        0x80 // Set the LCD to Addr 0
+#define INITIALIZE_CMD         0x03
+#define SET_4BIT_CMD           0x02
+
+#define CLEAR_CMD              0x01 // Clear the display
+#define ENTRY_MODE_CMD         0x04
+#define DISPLAY_CMD            0x08
+#define FUNC_SET_CMD           0x20
 #define WRITE_CGRAM_CMD        0x40
+#define HOME_CURSOR_CMD        0x80 // Set the LCD to Addr 0
 
 #define TIMER_A_VALUE          0
 #define TIMER_B_VALUE          _BV(CS32) | _BV(WGM32); //1/128th, CTC = 16 microsecond timer
@@ -74,7 +76,19 @@ static volatile uint8_t ops;
 
 void lcdInit()
 {
-    lcd.begin(LCD_COLS, LCD_ROWS);
+    delayMicroseconds(50000);            // 15ms after 4.5V or 40ms after 2.7V
+    lcdCommandNibble(INITIALIZE_CMD);
+    delayMicroseconds(4500);             // >4.1ms
+    lcdCommandNibble(INITIALIZE_CMD);
+    delayMicroseconds(150);              // > 100
+    lcdCommandNibble(INITIALIZE_CMD);
+    
+    lcdCommandNibble(SET_4BIT_CMD); // Set 4 bit interface
+    
+    lcdCommand(FUNC_SET_CMD | FUNCTION_ARGS); 
+    lcdCommand(DISPLAY_CMD | DISPLAY_ARGS); 
+    lcdCommand(CLEAR_CMD); 
+    lcdCommand(ENTRY_MODE_CMD | ENTRY_CMD_ARGS); 
     
     ops = 0; // Used for critical sections
     
