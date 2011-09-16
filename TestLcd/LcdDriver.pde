@@ -76,6 +76,14 @@ static volatile uint8_t ops;
 
 void lcdInit()
 {
+    SET_OUTPUT(LCD_RS_PIN);
+    SET_OUTPUT(LCD_E_PIN);
+    
+    SET_OUTPUT(LCD_DB4_PIN);
+    SET_OUTPUT(LCD_DB5_PIN);
+    SET_OUTPUT(LCD_DB6_PIN);
+    SET_OUTPUT(LCD_DB7_PIN);
+    
     delayMicroseconds(50000);            // 15ms after 4.5V or 40ms after 2.7V
     lcdCommandNibble(INITIALIZE_CMD);
     delayMicroseconds(4500);             // >4.1ms
