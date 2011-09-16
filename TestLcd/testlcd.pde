@@ -73,6 +73,7 @@ Screen welcomeScreen(
 void TestTwoBuffersWaiting();
 void TestCustomChar();
 void TestWriteBuffer();
+void TestScreenDisplay();
 
 void setup()
 {
@@ -85,6 +86,7 @@ void setup()
 
     delay(1000);
     
+    TestScreenDisplay();
     //TestWriteBuffer();
     //TestCustomChar();
     //TestTwoBuffersWaiting();
@@ -244,3 +246,9 @@ void TestWriteBuffer()
     while(true);
 }
 
+void TestScreenDisplay()
+{
+    welcomeScreen.Display();
+    
+    while(true);
+}

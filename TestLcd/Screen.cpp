@@ -57,3 +57,8 @@ void Screen::Print(char *row, int count)
     }
 }
 
+bool Screen::Display()
+{
+    return lcdWriteBuffer(buffer);
+}
+

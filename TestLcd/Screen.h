@@ -14,6 +14,8 @@ public:
     void Print(char* row);
     void Print(char* row, int count);
     
+    bool Display();
+    
 private:
     uint8_t buffer[LCD_ROWS * LCD_COLS];
     uint8_t* pCurrent;
