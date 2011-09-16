@@ -1,4 +1,5 @@
 #include "LcdDriver.h"
+#include "Screen.h"
 
 int count;
 
@@ -42,6 +43,23 @@ byte Screen2[] =
     '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', 
 };
 
+//Screen welcomeScreen;
+
+Screen welcomeScreen(
+       //12345678901234567890
+        "Welcome to Screens.."
+        "Second row          "
+        "Third row           "
+        "Forth row           "
+    );
+//Screen welcomeScreen2(
+//       //12345678901234567890
+//        "Welcome to Screens. "
+//        "Second row          "
+//        "Third row           "
+//        "Forth row           "
+//    );
+
 //#define DBG_STATE 
 
 #ifndef DBG_STATE
@@ -67,7 +85,7 @@ void setup()
 
     delay(1000);
     
-    TestWriteBuffer();
+    //TestWriteBuffer();
     //TestCustomChar();
     //TestTwoBuffersWaiting();
     
