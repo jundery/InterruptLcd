@@ -12,9 +12,11 @@ public:
     char* GetCursor() const { return pCurrent; }
     void SetCursor(char *pCursor) { pCurrent = pCursor; }
     void SetCursor(int col, int row);
+    void SetCursorRow(int row);
 
-    void Print(char* row);
-    void Print(char* row, int count);
+    void Print(char *text);
+    void Print(char *text, int count);
+    void PrintRow(int row, char *text);
 
     void PrintFloat31(float value);
     void PrintFloat41(float value);

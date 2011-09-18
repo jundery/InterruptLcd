@@ -19,42 +19,59 @@ Screen::Screen(char* baseScreen)
 
 void Screen::SetCursor(int col, int row)
 {
+    SetCursorRow(row);
+    pCurrent += col;
+}
+
+void Screen::SetCursorRow(int row)
+{
     switch (row)
     {
     case 0:
-        pCurrent = buffer + col;
+        pCurrent = buffer;
         break;
 
     case 1:
-        pCurrent = buffer + 2 * LCD_COLS + col;
+        pCurrent = buffer + 2 * LCD_COLS;
         break;
 
     case 2:
-        pCurrent = buffer + LCD_COLS + col;
+        pCurrent = buffer + LCD_COLS;
         break;
 
     case 3:
-        pCurrent = buffer + 3 * LCD_COLS + col;
+        pCurrent = buffer + 3 * LCD_COLS;
         break;
     }
 }
 
-void Screen::Print(char *row)
+void Screen::Print(char *text)
 {
-    while (*row)
+    while (*text)
     {
-        *pCurrent++ = *row++;
+        *pCurrent++ = *text++;
     }
 }
 
-void Screen::Print(char *row, int count)
+void Screen::Print(char *text, int count)
 {
-
-    while (*row && count)
+    while (*text && count)
     {
-        *pCurrent++ = *row++;
+        *pCurrent++ = *text++;
         --count;
     }
+    
+    while (count)
+    {
+        *pCurrent++ = ' ';
+        --count;
+    }
+}
+
+void Screen::PrintRow(int row, char *text)
+{
+    SetCursorRow(row);
+    Print(text, LCD_COLS);
 }
 
 bool Screen::Display()
