@@ -9,19 +9,21 @@ public:
     Screen();
     Screen(char* baseScreen);
 
-    char* GetCursor() const { return pCurrent; }
-    void SetCursor(char *pCursor) { pCurrent = pCursor; }
-    void SetCursor(int col, int row);
-    void SetCursorRow(int row);
+    char* getCursor() const { return pCurrent; }
+    void setCursor(char *pCursor) { pCurrent = pCursor; }
+    void setCursor(int col, int row);
+    void setCursorRow(int row);
 
-    void Print(char *text);
-    void Print(char *text, int count);
-    void PrintRow(int row, char *text);
+    void print(char ch);
+    void print(int value);
+    void print(char *text);
+    void print(char *text, int count);
+    void printRow(int row, char *text);
 
-    void PrintFloat31(float value);
-    void PrintFloat41(float value);
+    void printFloat31(float value);
+    void printFloat41(float value);
 
-    bool Display();
+    bool display();
 
 private:
     char buffer[LCD_ROWS * LCD_COLS];

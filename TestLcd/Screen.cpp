@@ -11,19 +11,18 @@ Screen::Screen(char* baseScreen)
 {
     for (int row = 0; row < LCD_ROWS; ++row)
     {
-        SetCursor(0, row);
-        Print(baseScreen + row * LCD_COLS, LCD_COLS);
+        printRow(row, baseScreen + row * LCD_COLS);
     }
     pCurrent = buffer;
 }
 
-void Screen::SetCursor(int col, int row)
+void Screen::setCursor(int col, int row)
 {
-    SetCursorRow(row);
+    setCursorRow(row);
     pCurrent += col;
 }
 
-void Screen::SetCursorRow(int row)
+void Screen::setCursorRow(int row)
 {
     switch (row)
     {
@@ -45,7 +44,12 @@ void Screen::SetCursorRow(int row)
     }
 }
 
-void Screen::Print(char *text)
+void Screen::print(char ch)
+{
+    *pCurrent++ = ch;
+}
+
+void Screen::print(char *text)
 {
     while (*text)
     {
@@ -53,7 +57,7 @@ void Screen::Print(char *text)
     }
 }
 
-void Screen::Print(char *text, int count)
+void Screen::print(char *text, int count)
 {
     while (*text && count)
     {
@@ -68,19 +72,19 @@ void Screen::Print(char *text, int count)
     }
 }
 
-void Screen::PrintRow(int row, char *text)
+void Screen::printRow(int row, char *text)
 {
-    SetCursorRow(row);
-    Print(text, LCD_COLS);
+    setCursorRow(row);
+    print(text, LCD_COLS);
 }
 
-bool Screen::Display()
+bool Screen::display()
 {
     return lcdWriteBuffer((uint8_t*)buffer);
 }
 
 // Print float with +123.4 format
-void Screen::PrintFloat31(float value)
+void Screen::printFloat31(float value)
 {
     int total;
     int digit;
@@ -120,7 +124,7 @@ void Screen::PrintFloat31(float value)
 }
 
 //  Print float with +1234.5 format
-void Screen::PrintFloat41(float value)
+void Screen::printFloat41(float value)
 {
     int total;
     int digit;
@@ -163,6 +167,49 @@ void Screen::PrintFloat41(float value)
     *pCurrent++ = '.';
 
     *pCurrent++ = digit + '0';
+}
+
+void Screen::print(int value)
+{
+    int digit;
+    bool printing = false;
+    
+    if (value < 0)
+    {
+        print('-');
+        value *= -1;
+    }
+    
+    if (value > 10000 || printing)
+    {
+        digit = value / 10000;
+        print(digit + '0');
+        value -= digit * 10000;
+        printing = true;
+    }
+    if (value > 1000 || printing)
+    {
+        digit = value / 1000;
+        print(digit + '0');
+        value -= digit * 1000;
+        printing = true;
+    }
+    if (value > 100 || printing)
+    {
+        digit = value / 100;
+        print(digit + '0');
+        value -= digit * 100;
+        printing = true;
+    }
+    if (value > 10 || printing)
+    {
+        digit = value / 10;
+        print(digit + '0');
+        value -= digit * 10;
+        printing = true;
+    }
+
+    print(value + '0');
 }
 
 

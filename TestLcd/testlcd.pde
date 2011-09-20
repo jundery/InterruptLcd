@@ -248,7 +248,7 @@ void TestWriteBuffer()
 
 void TestScreenDisplay()
 {
-    welcomeScreen.Display();
+    welcomeScreen.display();
     
     while(true);
 }
