@@ -176,40 +176,40 @@ void Screen::print(int value)
     
     if (value < 0)
     {
-        print('-');
+        *pCurrent++ = '-';
         value *= -1;
     }
     
     if (value > 10000 || printing)
     {
         digit = value / 10000;
-        print(digit + '0');
+        *pCurrent++ = digit + '0';
         value -= digit * 10000;
         printing = true;
     }
     if (value > 1000 || printing)
     {
         digit = value / 1000;
-        print(digit + '0');
+        *pCurrent++ = digit + '0';
         value -= digit * 1000;
         printing = true;
     }
     if (value > 100 || printing)
     {
         digit = value / 100;
-        print(digit + '0');
+        *pCurrent++ = digit + '0';
         value -= digit * 100;
         printing = true;
     }
     if (value > 10 || printing)
     {
         digit = value / 10;
-        print(digit + '0');
+        *pCurrent++ = digit + '0';
         value -= digit * 10;
         printing = true;
     }
 
-    print(value + '0');
+    *pCurrent++ = value + '0';
 }
 
 

@@ -231,7 +231,7 @@ bool lcdWriteBuffer(uint8_t *pBuffer)
     
     CODE_ENTER; // Synchronize ReadReady and writeState with ISR
     
-    pWrite->ReadReady = true;
+    pWriteNext->ReadReady = true;
     if (interruptState == INTERRUPTSTATE_IDLE)
     {
         interruptState = INTERRUPTSTATE_CMD_HI1;
@@ -239,7 +239,7 @@ bool lcdWriteBuffer(uint8_t *pBuffer)
     
     CODE_LEAVE; // End synchronize ReadReady and writeState with ISR
 
-    pWriteNext = pWrite->pNext;
+    pWriteNext = pWriteNext->pNext;
     
     return true;
 }

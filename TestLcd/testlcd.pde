@@ -250,5 +250,18 @@ void TestScreenDisplay()
 {
     welcomeScreen.display();
     
+    delay(1000);
+    
+    welcomeScreen.setCursor(11,1);
+    welcomeScreen.print(-32123);
+    
+    welcomeScreen.setCursor(11,2);
+    welcomeScreen.print(32123);
+    
+    welcomeScreen.setCursor(11,3);
+    welcomeScreen.print(1);
+    
+    welcomeScreen.display();
+    
     while(true);
 }
